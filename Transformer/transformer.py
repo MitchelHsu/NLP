@@ -133,3 +133,32 @@ class MultiHeadAttention(nn.Module):
         output = self.W_O(self.fuse_heads(attention))
 
         return output
+
+
+class PositionWiseFeedForward(nn.Module):
+    """
+    Implementation of the Position-wise Feed-Forward Networks
+    """
+    def __init__(self, d_model: int, d_ff: int):
+        """
+        Args:
+            d_model: int, Dimension of the embedding vector
+            d_ff: int, Dimension of the hidden layer in position-wise feed-forward network
+        """
+        super(PositionWiseFeedForward, self).__init__()
+        self.fc1 = nn.Linear(d_model, d_ff)
+        self.fc2 = nn.Linear(d_ff, d_model)
+        self.relu = nn.ReLU()
+        
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            x: Tensor, Input tensor, comes from the ouput of the MultiHeadAttention network
+        Returns:
+            output: Tensor, Output of the Position-wise Feed-Forward network
+        """
+        x = self.fc1(x)
+        x = self.relu(x)
+        output = self.fc2(x)
+        
+        return output
