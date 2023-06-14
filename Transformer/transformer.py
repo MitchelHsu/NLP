@@ -8,12 +8,6 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
 
-# Use Apple Silicon
-device = 'mps' if torch.backends.mps.is_available() else 'cpu'
-# Use NVIDIA GPU
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-print(f'Your using "{device}" as your training device')
-
 
 class Embedding(nn.Module):
     """The Embedding Layer of Transformer architecture"""
