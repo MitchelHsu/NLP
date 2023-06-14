@@ -188,3 +188,23 @@ class PositionalEncoding(nn.Module):
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return x + self.pe[:, :x.size(1)]
+
+
+class EncoderLayer(nn.Module):
+    """Implementations of Transformer Encoder layer"""
+    def __init__(self, d_model, num_heads, d_ff, dropout):
+        super(EncoderLayer, self).__init__()
+        
+        self.attn = MultiHeadAttention(d_model, num_heads)
+        self.feed_forward = PositionWiseFeedForward(d_model, d_ff)
+        self.layer_norm1 = nn.LayerNorm(d_model)
+        self.layer_norm2 = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+        
+    def forward(self, x, mask):
+        attn_out = self.attn(x, x, x, mask)
+        x = self.layer_norm1(x + self.dropout(attn_out))
+        ff_out = self.feed_forward(x)
+        x = self.layer_norm2(x + self.dropout(ff_out))
+        
+        return x
