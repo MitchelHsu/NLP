@@ -162,3 +162,29 @@ class PositionWiseFeedForward(nn.Module):
         output = self.fc2(x)
         
         return output
+
+
+class PositionalEncoding(nn.Module):
+    """Implementations of Positional Encoding (has linear property)"""
+    def __init__(self, max_seq_length, d_model):
+        super(PositionalEncoding, self).__init__()
+        
+        # The positional encoding vector
+        positional_encoding = torch.zeros(max_seq_length, d_model)
+        # print(positional_encoding.size())
+        # Corresponding to pos
+        positions = torch.arange(0, max_seq_length, dtype=torch.float).unsqueeze(1)
+        # print(positions.size())
+        # Corresponding to i embedding
+        embed_pos = torch.exp(torch.arange(0, d_model, 2).float() * -math.log(10000.0) / 512)
+        # print(embed_pos.size())
+        
+        # Multiply the scaled embed_pos with position
+        positional_encoding[:, 0::2] = torch.sin(positions * embed_pos)
+        positional_encoding[:, 1::2] = torch.cos(positions * embed_pos)
+        
+        # To indicate pe is not model parameter
+        self.register_buffer('pe', positional_encoding.unsqueeze(0))
+        
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x + self.pe[:, :x.size(1)]
