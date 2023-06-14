@@ -208,3 +208,25 @@ class EncoderLayer(nn.Module):
         x = self.layer_norm2(x + self.dropout(ff_out))
         
         return x
+
+
+class DecoderLayer(nn.Module):
+    def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout: float):
+        super(DecoderLayer, self).__init__()
+        self.masked_attn = MultiHeadAttention(d_model, num_heads)
+        slef.cross_attn = MultiHeadAttention(d_model, num_heads)
+        self.layer_norm1 = nn.LayerNorm(d_model)
+        self.layer_norm2 = nn.LayerNorm(d_model)
+        self.layer_norm3 = nn.LayerNorm(d_model)
+        self.feed_forward = PositionWiseFeedForward(d_model, d_ff)
+        self.dropout = nn.Dropout(dropout)
+        
+    def foward(self, x: torch.Tensor, enc_output: torch.Tensor, src_mask: torch.Tensor, tgt_mask: torch.Tensor) -> torch.Tensor:
+        attn_out = self.masked_attn(x, x, x, tgt_mask)
+        x = self.layer_norm1(x + self.dropout(attn_out))
+        attn_out = self.cross_attn(x, enc_output, enc_output, src_mask)
+        x = self.layer_norm2(x + self.dropout(attn_out))
+        ff_out = self.feed_forward(x)
+        x = self.layer_norm3(x + self.dropout(ff_out))
+        
+        return x
