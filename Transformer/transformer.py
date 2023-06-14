@@ -16,6 +16,7 @@ print(f'Your using "{device}" as your training device')
 
 
 class Embedding(nn.Module):
+    """The Embedding Layer of Transformer architecture"""
     def __init__(self, vocab_size, embed_dim=512):
         """
         Args:
@@ -39,6 +40,7 @@ class Embedding(nn.Module):
 
 # TODO: Add function descriptions
 class MultiHeadAttention(nn.Module):
+    """Implementation of MultiHeadAttention mechanism"""
     def __init__(self, d_model: int, num_heads: int):
         """
         Args:
@@ -61,10 +63,10 @@ class MultiHeadAttention(nn.Module):
 
     def scaled_dot_product_attention(self, K: torch.Tensor, Q: torch.Tensor, V: torch.Tensor, mask: torch.Tensor=None) -> torch.Tensor:
         """
-        This is the implementation of Scaled Dot-Product Attention
-        
-                Attention(Q, K, V) = softmax(QK_t / √d_k)V
-        
+        Desciption:
+            This is the implementation of Scaled Dot-Product Attention
+
+                    Attention(Q, K, V) = softmax(QK_t / √d_k)V
         Args:
             K: Tensor, Key of self-attention, shape ``[batch_size, seq_len, embed_dim]``
             Q: Tensor, Query of self-attention, shape ``[batch_size, seq_len, embed_dim]``
