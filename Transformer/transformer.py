@@ -55,12 +55,13 @@ class MultiHeadAttention(nn.Module):
         self.d_k = d_model // num_heads
         self.reveal = reveal
 
-        # Initial weights for Key, Query, Value, and
+        # Initial weights for Key, Query, Value, and Output
         self.W_Q = nn.Linear(d_model, d_model)
         self.W_K = nn.Linear(d_model, d_model)
         self.W_V = nn.Linear(d_model, d_model)
         self.W_O = nn.Linear(d_model, d_model)
 
+    # TODO: Fix description
     def scaled_dot_product_attention(self, K: torch.Tensor, Q: torch.Tensor, V: torch.Tensor, mask: torch.Tensor=None) -> torch.Tensor:
         """
         Desciption:
@@ -94,13 +95,42 @@ class MultiHeadAttention(nn.Module):
         
         return output
 
-    def split_heads(self, x: torch.Tensor):
-        pass
+    def split_heads(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Description:
+            Split the embeddings into num_heads channels.
 
-    def fuse_heads(self, x: torch.Tensor):
-        pass
+        Args:
+            x: Tensor, shape ``[batch_size, seq_len, embed_dim]``
+        Returns:
+            x: Tensor, shape ``[batch_size, num_heads, seq_len, embed_dim]``
+        """
+        batch_size, sequence_len, d_model = x.size()
+        
+        return x.view(batch_size, sequence_len, self.num_heads, self.d_k).transpose(1, 2)
+
+    def fuse_heads(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Desciption:
+            Fuse back the splited heads in to one Tensor
+        
+        Args:
+            x: Tensor
+        """
+        batch_size, _, sequence_len, d_k = x.size()
+        
+        return x.transpose(1, 2).contiguous().view(batch_size, sequence_len, self.d_model)
 
     def forward(self, Q: torch.Tensor, K: torch.Tensor, V: torch.Tensor, mask: torch.Tensor=None) -> torch.Tensor:
+        """
+        Args:
+            Q: Tensor, Query of the self-attention, shape ``[batch_size, seq_len, embed_dim]``
+            K: Tensor, Key of the self-attention, shape ``[batch_size, seq_len, embed_dim]``
+            V: Tensor, Value of the self-attention, shape ``[batch_size, seq_len, embed_dim]``
+            mask: Tensor, The mask needed for Transformer decoder
+        Returns:
+            output: Tensor, The output of the MultiHeadAttention mechanism, shape ``[batch_size, seq_len, embed_dim]``
+        """
         Q = self.split_heads(self.W_Q(Q))
         K = self.split_heads(self.W_K(K))
         V = self.split_heads(self.W_V(V))
