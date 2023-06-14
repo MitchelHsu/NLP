@@ -63,12 +63,12 @@ class MultiHeadAttention(nn.Module):
 
                     Attention(Q, K, V) = softmax(QK_t / √d_k)V
         Args:
-            K: Tensor, Key of self-attention, shape ``[batch_size, seq_len, embed_dim]``
-            Q: Tensor, Query of self-attention, shape ``[batch_size, seq_len, embed_dim]``
-            V: Tensor, Value of self-attention, shape ``[batch_size, seq_len, embed_dim]``
-            mask: Tensor, mask for the Transformer decoder, shape
+            K: Tensor, Key of multihead self-attention, shape ``[batch_size, num_heads, seq_len, embed_dim]``
+            Q: Tensor, Query of multihead self-attention, shape ``[batch_size, num_heads, seq_len, embed_dim]``
+            V: Tensor, Value of multihead self-attention, shape ``[batch_size, num_heads, seq_len, embed_dim]``
+            mask: Tensor, mask for the Transformer decoder
         Returns:
-            output: Tensor, the result of Scaled Dot-Product Attention, shape ``[batch_size, seq_len, embed_dim]``
+            output: Tensor, the result of Scaled Dot-Product Attention, shape ``[batch_size, num_heads, seq_len, embed_dim]``
         """
         # QK_t / √d_model, the scaled dot-products value
         # The dim of both Q and V is 32x8x10x64, the dim of V_t will be 32x8x64x10
