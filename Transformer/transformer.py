@@ -37,15 +37,13 @@ class Embedding(nn.Module):
         return output
 
 
-
-# TODO: Add reveal blocks
+# TODO: Add function descriptions
 class MultiHeadAttention(nn.Module):
-    def __init__(self, d_model: int, num_heads: int, reveal: bool=False):
+    def __init__(self, d_model: int, num_heads: int):
         """
         Args:
-            d_model  : The dimension of the embedding layer output.
-            num_heads: Number of heads(channels) of this self-attetion.
-            reveal   : Whether to print shapes along the way.
+            d_model -> int: The dimension per embedding vector
+            num_heads -> int: The number of heads of this self-attention
         """
         super(MultiHeadAttention, self).__init__()
         assert d_model % num_heads == 0, "The embedding dimension should be divsible by the number of heads"
@@ -62,12 +60,20 @@ class MultiHeadAttention(nn.Module):
         self.W_O = nn.Linear(d_model, d_model)
 
     def scaled_dot_product_attention(self, K: torch.Tensor, Q: torch.Tensor, V: torch.Tensor, mask: torch.Tensor=None) -> torch.Tensor:
-        '''
+        """
         This is the implementation of Scaled Dot-Product Attention
         
-        Dimension of K, Q, V: (batch_size, num_heads, seq_len, embedding_dim)
-        '''
-        # QK_t / √d_model, the scaled-dot value
+                Attention(Q, K, V) = softmax(QK_t / √d_k)V
+        
+        Args:
+            K: Tensor, Key of self-attention, shape ``[batch_size, seq_len, embed_dim]``
+            Q: Tensor, Query of self-attention, shape ``[batch_size, seq_len, embed_dim]``
+            V: Tensor, Value of self-attention, shape ``[batch_size, seq_len, embed_dim]``
+            mask: Tensor, mask for the Transformer decoder, shape
+        Returns:
+            output: Tensor, the result of Scaled Dot-Product Attention, shape ``[batch_size, seq_len, embed_dim]``
+        """
+        # QK_t / √d_model, the scaled dot-products value
         # The dim of both Q and V is 32x8x10x64, the dim of V_t will be 32x8x64x10
         # So the dim of attention_score will be 32x8x10x10
         attention_score = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_model)
