@@ -15,23 +15,47 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'Your using "{device}" as your training device')
 
 
-class Embedding(nn.Embedding):
-    '''
-    Embedding Layer
-    '''
-    def __init__(self, vocab_size: int, embed_dim: int=512):
+class Embedding(nn.Module):
+    def __init__(self, vocab_size, embed_dim=512):
+        """
+        Args:
+            vocab_size: size of vocabulary
+            embed_dim: dimension of embeddings
+        """
         super(Embedding, self).__init__()
         self.embedding = nn.Embedding(vocab_size, embed_dim)
+        
+    def forward(self, x):
+        """
+        Args:
+            x: input vector, usually has the size of (batch_size, sequence_len)
+        Returns:
+            output: embedding vector, usually has the size of (batch_size, sequence_len, embed_dim)
+        """
+        output = self.embedding(x)
+        
+        return output
 
-    def forward(self, x) -> torch.Tensor:
-        return self.embedding(x)
 
+
+# TODO: Add reveal blocks
 class MultiHeadAttention(nn.Module):
-    def __init__(self, d_model: int, num_heads: int):
+    def __init__(self, d_model: int, num_heads: int, reveal: bool=False):
+        """
+        Args:
+            d_model  : The dimension of the embedding layer output.
+            num_heads: Number of heads(channels) of this self-attetion.
+            reveal   : Whether to print shapes along the way.
+        """
+        super(MultiHeadAttention, self).__init__()
         assert d_model % num_heads == 0, "The embedding dimension should be divsible by the number of heads"
+        
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+        self.reveal = reveal
 
         # Initial weights for Key, Query, Value, and
-        # Shape of the weights should all be (batch_size, d_model, d_model)
         self.W_Q = nn.Linear(d_model, d_model)
         self.W_K = nn.Linear(d_model, d_model)
         self.W_V = nn.Linear(d_model, d_model)
