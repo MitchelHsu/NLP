@@ -214,7 +214,7 @@ class DecoderLayer(nn.Module):
     def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout: float):
         super(DecoderLayer, self).__init__()
         self.masked_attn = MultiHeadAttention(d_model, num_heads)
-        slef.cross_attn = MultiHeadAttention(d_model, num_heads)
+        self.cross_attn = MultiHeadAttention(d_model, num_heads)
         self.layer_norm1 = nn.LayerNorm(d_model)
         self.layer_norm2 = nn.LayerNorm(d_model)
         self.layer_norm3 = nn.LayerNorm(d_model)
