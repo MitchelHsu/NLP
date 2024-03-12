@@ -1,5 +1,4 @@
 # ImplementDL
-**&ast;&ast;I'm Starting off with the [Tranformer](https://github.com/MitchelHsu/ImplementDL/tree/main/Transformer) architecture lately&ast;&ast;**
 
 My implementations, logs, and explanations of Deep Learning models. 
 
